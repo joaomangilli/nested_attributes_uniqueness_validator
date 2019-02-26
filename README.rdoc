@@ -1,0 +1,39 @@
+= NestedAttributesUniquenessValidator
+
+* Source:  https://github.com/joaomangilli/nested_attributes_uniqueness_validator
+* Issues:  https://github.com/joaomangilli/nested_attributes_uniqueness_validator/issues
+
+== Description
+
+Uniqueness validator for nested attributes.
+This gem solves the problem described in https://github.com/rails/rails/issues/4568.
+
+== Installation
+
+  # in Gemfile
+  gem 'nested_attributes_uniqueness_validator'
+
+  # Run bundler
+  $ bundle install
+  
+== Usage
+
+  class Person < ActiveRecord::Base
+    has_many :contacts
+    
+    validates :contacts, nested_attributes_uniqueness: { scope: [:person_id, :phone] }
+
+    accepts_nested_attributes_for :contacts
+  end
+  
+  class Contact < ActiveRecord::Base
+    belongs_to :person
+  end
+  
+=== Options
+  
+  scope: Attributes that make up the scope of uniqueness. Required.
+  allow_destroyed: Consider records marked for destruction. Default: false.
+  allow_blank: Consider blank fields. Default: false.
+  attribute: Field that will receive the error message. Default: first attribute scope.
+  message: Error message. Default: taken.
