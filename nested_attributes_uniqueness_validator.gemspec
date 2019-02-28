@@ -12,4 +12,6 @@ Gem::Specification.new do |s|
   s.email = ['joaoluissilvamangilli@gmail.com', 'marcelobalexandre@gmail.com']
   s.files = ['lib/nested_attributes_uniqueness_validator.rb']
   s.homepage = 'https://github.com/joaomangilli/nested_attributes_uniqueness_validator'
+
+  s.add_runtime_dependency 'activemodel', '>= 3.0'
 end
