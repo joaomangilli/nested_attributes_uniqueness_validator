@@ -14,4 +14,5 @@ Gem::Specification.new do |s|
   s.homepage = 'https://github.com/joaomangilli/nested_attributes_uniqueness_validator'
 
   s.add_runtime_dependency 'activemodel', '>= 3.0'
+  s.add_development_dependency 'rspec', '~> 3.8'
 end
