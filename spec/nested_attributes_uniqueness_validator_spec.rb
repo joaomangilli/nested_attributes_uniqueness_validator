@@ -1,35 +1,16 @@
 class Parent
   include ActiveModel::Model
 
-  attr_accessor :children
+  attr_accessor :children, :attribute, :scope, :message
 
   validates(
     :children,
     nested_attributes_uniqueness: {
       attribute: :number,
-      scope: %i[id number],
-      message: 'Message'
+      scope: :scope,
+      message: :message
     }
   )
-end
-
-class ParentWithoutAttribute
-  include ActiveModel::Model
-
-  attr_accessor :children
-
-  validates(
-    :children,
-    nested_attributes_uniqueness: { scope: %i[id number] }
-  )
-end
-
-class ParentWithoutScope
-  include ActiveModel::Model
-
-  attr_accessor :children
-
-  validates :children, nested_attributes_uniqueness: { attribute: :number }
 end
 
 class Child
@@ -41,10 +22,22 @@ class Child
 end
 
 describe NestedAttributesUniquenessValidator do
-  let(:message) { 'Message' }
+  subject do
+    Parent.new(
+      children: children,
+      attribute: attribute,
+      scope: scope,
+      message: message
+    )
+  end
+
+  let(:children) { [] }
+  let(:attribute) { nil }
+  let(:scope) { nil }
+  let(:message) { nil }
 
   context 'when :scope is not present' do
-    subject { ParentWithoutScope.new }
+    let(:scope) { nil }
 
     it do
       expect { subject.valid? }.to(
@@ -54,7 +47,7 @@ describe NestedAttributesUniquenessValidator do
   end
 
   context 'when :scope is present' do
-    subject { ParentWithoutAttribute.new(children: children) }
+    let(:scope) { %i[id number] }
 
     context 'and there are duplicate children' do
       let(:children) { [child_one, child_two] }
@@ -74,7 +67,8 @@ describe NestedAttributesUniquenessValidator do
       it { expect(child_one.errors[:id]).to include(:taken) }
 
       context 'and an attribute and a message are defined' do
-        subject { Parent.new(children: children) }
+        let(:attribute) { :number }
+        let(:message) { 'Validation message' }
 
         before { subject.valid? }
 
@@ -84,8 +78,6 @@ describe NestedAttributesUniquenessValidator do
     end
 
     context 'and there are no duplicate childrens' do
-      subject { Parent.new(children: children) }
-
       let(:children) { [child_one, child_two] }
 
       let(:child_one) do
@@ -102,8 +94,6 @@ describe NestedAttributesUniquenessValidator do
     end
 
     context 'and there are deleted childrens' do
-      subject { Parent.new(children: children) }
-
       let(:children) { [child_one, child_two] }
 
       let(:child_one) do
